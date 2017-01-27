@@ -3,9 +3,7 @@
 Betriebssysteme-Übung
 
 Kompilieren:
-- gcc client.c -o client.exe
-- gcc server.c -o server.exe
-- gcc ctest.c -lncurses -lpthread -o ctest.exe
+- cmake . && make
 
 Testen:
 
@@ -14,6 +12,10 @@ Testen:
 #TODO
 
 (wenn man das benutzen wollen würde)
+
+Als Erstes:
+
+- ERRORHANDLING! Überall! Ahrg!
 
 Generell:
 
