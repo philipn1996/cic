@@ -1,18 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <sys/socket.h>                                                                                                         
 #include <netinet/in.h>
-#include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include <signal.h>
-
-#include <fcntl.h> 
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <fcntl.h>
+#include <strings.h>
 
 //Socket definitions
 #define PORT 1024

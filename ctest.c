@@ -1,6 +1,5 @@
 #include <curses.h>
 #include <stdlib.h> //noetig fuer atexit()
-#include <string.h>
 
 #include <pthread.h>
 #include <semaphore.h>
@@ -9,8 +8,10 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <sys/types.h>
+#include <strings.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 #define BUFFER 256
 #define SERVERPIPE "/tmp/ic-srv"
 #define CLIENTPIPE "/tmp/ic-client"
@@ -46,7 +47,7 @@ void addmessage(char p, char * mes) {
 	refresh();
 }
 
-void *readloop() {
+void *readloop(void *arg) {
 	int fdc = open(CLIENTPIPE, O_WRONLY);
 
 	char buffer[BUFFER];
@@ -68,6 +69,7 @@ void *readloop() {
 }
 
 int main(int argc, char *argv[]) {
+
 	char buffer[BUFFER];
 	int fd;
 
@@ -85,18 +87,26 @@ int main(int argc, char *argv[]) {
 	mkfifo(SERVERPIPE, 0666);
 	mkfifo(CLIENTPIPE, 0666);	
 
-	pthread_create(&inThread, NULL, readloop, NULL);
+	if (pthread_create(&inThread, NULL, &readloop, NULL) != 0){
+        perror("Konnte Thread nicht erzeugen");
+        exit(EXIT_FAILURE);
+    }
 
 	if(fork()==0) { //child-prozess
 		//char *args[] = {NULL, ""};
 		//sprintf(args[1],"%p",fd[1]);
-		execve("./server.exe", NULL,NULL);
+		if (execve("./server", NULL,NULL) != 0){
+            perror("Ein Fehler beim starten des Servers ist aufgetreten!");
+            exit(EXIT_FAILURE);
+        }
 		//write(fd[1], "Hallo", 6);
 	}
 	if(fork()==0) {
-		char *args[] = { "client.exe", ""};
-		args[1] = argv[1];
-		execve("./client.exe", argv, NULL);
+		char *client_args[] = {"client", "127.0.0.1"};
+		if (execve("./client", client_args, NULL) != 0){
+            perror("Ein Fehler beim starten des Clients ist aufgetreten!");
+            exit(EXIT_FAILURE);
+        }
 	}
 
 	fd = open(SERVERPIPE, O_RDONLY);
@@ -107,8 +117,11 @@ int main(int argc, char *argv[]) {
 		addmessage('l', buffer);
 		sem_post(&screen);
 	}
+    // TODO: Unreachable code
 	pthread_join(inThread, NULL);
 	sem_destroy(&screen);
 	return(0);
 
 }
+
+#pragma clang diagnostic pop
