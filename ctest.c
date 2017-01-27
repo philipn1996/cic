@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 		//write(fd[1], "Hallo", 6);
 	}
 	if(fork()==0) {
-		char *client_args[] = {"127.0.0.1"};
+		char *client_args[] = {"client", "127.0.0.1"};
 		if (execve("./client", client_args, NULL) != 0){
             perror("Ein Fehler beim starten des Clients ist aufgetreten!");
             exit(EXIT_FAILURE);

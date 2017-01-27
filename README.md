@@ -9,7 +9,7 @@ Kompilieren:
 
 Testen:
 
-./ctest.exe 127.0.0.1 - Selbstgespräche
+./ctest.exe - Selbstgespräche
 
 #TODO
 
