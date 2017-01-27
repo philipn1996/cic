@@ -1,15 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>                                                                                                         
 #include <netinet/in.h>
-
-#include <signal.h>
-
 #include <fcntl.h>
-#include <stdio.h>
-#include <sys/stat.h>
+#include <strings.h>
 
 //Socket definitions
 #define BUFFER 256
@@ -43,7 +37,7 @@ int main(int argc, char *argv[]) {
 
 	struct sockaddr_in server_addr, client_addr;
 	char buffer[BUFFER];
-	int ret, clilen;
+	int ret;
 	/*Create Socket*/
 	//printf("Create Socket...\n");
 	s_id = socket(AF_INET, SOCK_STREAM, 0);
@@ -74,7 +68,7 @@ int main(int argc, char *argv[]) {
 	//Ready! process connections
 
 	while(1) {
-		clilen = sizeof(client_addr);
+		socklen_t clilen = sizeof(client_addr);
 		connection = accept(s_id, (struct sockaddr*)&client_addr, &clilen);
 		if(connection == -1) {
 			perror("accept");
@@ -82,7 +76,7 @@ int main(int argc, char *argv[]) {
 		}
 		while(1) {
 			bzero(buffer, BUFFER);
-			if( (ret=read(connection, buffer, BUFFER)) == -1 ) {
+			if((ret= (int) read(connection, buffer, BUFFER)) == -1 ) {
 				perror("read");
 				exit(EXIT_FAILURE);
 			}
